@@ -1,0 +1,123 @@
+---
+title: Why plotthedata?
+author: Ryan Chitwood
+date: '2019-11-12'
+slug: why-plotthedata
+categories: []
+tags: []
+---
+
+# Introduction
+
+In data science, there's always some hip new technology, model, or package to try out. It's great to work in such a growing field, but sometimes I tire from all the newness. When that happens, I hearken back to the words of an old professor of mine:
+
+> Always **plot the data**.
+
+This pearl has followed me from my first semester of grad school to this day, so coming up with a name for my personal website was easy: plotthedata.
+
+# Case Study: Anscombe's Quartet
+
+When beginning any data analysis, it's easy to jump right to the statistics, but so much can be missed when you don't plot the data. A famous group of data sets exemplifies this folly: [Anscombe's quartet](https://en.wikipedia.org/wiki/Anscombe%27s_quartet). And it's one of R's built-in data sets!
+
+```{r, anscombe}
+head(anscombe)
+```
+
+## Tidy
+
+Unfortunately, `anscombe` breaks the first rule of tidy data:
+
+> Each variable must have its own column.
+
+Let's fix that. First, load the tidyvsere package:
+
+```{r, setup, message = FALSE}
+library(tidyverse)
+```
+
+Now, tidy:
+
+```{r, anscombe_tidy}
+anscombe_tidy <- anscombe %>% 
+  mutate(observation = row_number()) %>% 
+  gather(key, value, -observation) %>% 
+  separate(key, into = c("var", "set"), sep = 1) %>% 
+  spread(var, value)
+
+head(anscombe_tidy)
+```
+
+## Summary Statistics
+
+Phew, that's better. Now, let's compute some summary statistics:
+
+```{r, set_means}
+anscombe_tidy %>% 
+  group_by(set) %>% 
+  summarize(
+    mean(x),
+    var(x),
+    mean(y),
+    var(y),
+    cor(x, y)
+  )
+```
+
+The summary statistics are nearly identical! That's weird. Let's run some models to see what's going on here.
+
+## Model
+
+Each data set has a single continuous explanatory variable and single continuous response variable. Sounds like a job for simple linear regression! Now, we *could* run four separate regressions, but that's no fun. This is R! We have the power to do better! Let's use the power of `tidyr::nest()`:
+
+```{r, nest_by_set}
+by_set <- anscombe_tidy %>% 
+  group_by(set) %>% 
+  nest()
+```
+
+So now we have a grouped data frame where each row is an Anscombe set and the data column contains that data set. Pretty neat! Now let's create our model function:
+
+```{r, set_model}
+set_model <- function(df) {
+  lm(y ~ x, data = df)
+} 
+```
+
+Now, let's map the model function to our nested data frame:
+
+```{r, map_model}
+by_set <- by_set %>% 
+  mutate(model = map(data, set_model))
+```
+
+We now have a columns that contains a list of our data and a list of our models. Let's use the broom package to extract some of the parameter estimates:
+
+```{r, tidy_fit}
+library(broom)
+
+by_set %>% 
+  mutate(fit = map(model, tidy)) %>% 
+  select(set, fit) %>% 
+  unnest(fit) %>% 
+  arrange(term, set)
+```
+
+Wow! We can see clearly that the summary statistics *and* model summaries are nearly identical for all data sets. This is bananas. 
+
+## Plot
+
+Okay, we've avoided it long enough. It's time to plot the data.
+
+```{r, plot}
+anscombe_tidy %>% 
+  ggplot(aes(x, y)) + 
+  geom_point() + 
+  facet_wrap(~set) + 
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+And the curtain is lifted. We can see clearly that these are wildly different data sets! We would be lost on all accounts if we neglected to **plot the data**.
+
+# Conclusion
+
+This has been a contrived example, but it serves to prove a larger point: the fundamentals are important. Next time you are staring down the chasm between your current skill set and where you want to be, do me a favor: stop, take a deep breath, and **plot the data**.
