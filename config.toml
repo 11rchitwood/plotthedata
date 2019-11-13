@@ -1,4 +1,4 @@
-baseurl = "https://plotthedata.com/"
+baseurl = "/"
 languageCode = "en-us"
 title = "plotthedata"
 theme = "hugo-lithium"
