@@ -1,13 +1,12 @@
 ---
 title: Why plotthedata?
 author: Ryan Chitwood
-date: '2019-11-12'
+date: '2020-01-01'
+publishdate: '2020-01-01'
 slug: why-plotthedata
 categories: []
 tags: []
 ---
-
-# Introduction
 
 In data science, there's always some hip new technology, model, or package to try out. It's great to work in such a growing field, but sometimes I tire from all the newness. When that happens, I hearken back to the words of an old professor of mine:
 
