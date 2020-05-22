@@ -1,7 +1,8 @@
 ---
 title: Why plotthedata?
 author: Ryan Chitwood
-date: '2019-11-12'
+date: '2020-01-01'
+publishdate: '2020-01-01'
 slug: why-plotthedata
 categories: []
 tags: []
@@ -9,14 +10,11 @@ tags: []
 
 
 
-<div id="introduction" class="section level1">
-<h1>Introduction</h1>
 <p>In data science, there’s always some hip new technology, model, or package to try out. It’s great to work in such a growing field, but sometimes I tire from all the newness. When that happens, I hearken back to the words of an old professor of mine:</p>
 <blockquote>
 <p>Always <strong>plot the data</strong>.</p>
 </blockquote>
 <p>This pearl has followed me from my first semester of grad school to this day, so coming up with a name for my personal website was easy: plotthedata.</p>
-</div>
 <div id="case-study-anscombes-quartet" class="section level1">
 <h1>Case Study: Anscombe’s Quartet</h1>
 <p>When beginning any data analysis, it’s easy to jump right to the statistics, but so much can be missed when you don’t plot the data. A famous group of data sets exemplifies this folly: <a href="https://en.wikipedia.org/wiki/Anscombe%27s_quartet">Anscombe’s quartet</a>. And it’s one of R’s built-in data sets!</p>
@@ -116,7 +114,8 @@ by_set %&gt;%
   geom_point() + 
   facet_wrap(~set) + 
   geom_smooth(method = &quot;lm&quot;, se = FALSE)</code></pre>
-<p><img src="/post/2019-11-12-why-plotthedata_files/figure-html/plot-1.png" width="672" /></p>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/post/2020-01-01-why-plotthedata_files/figure-html/plot-1.png" width="672" /></p>
 <p>And the curtain is lifted. We can see clearly that these are wildly different data sets! We would be lost on all accounts if we neglected to <strong>plot the data</strong>.</p>
 </div>
 </div>
