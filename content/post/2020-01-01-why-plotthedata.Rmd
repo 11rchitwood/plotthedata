@@ -1,22 +1,22 @@
 ---
-title: Why plotthedata?
+title: Why plot the data?
 author: Ryan Chitwood
 date: '2020-01-01'
 publishdate: '2020-01-01'
-slug: why-plotthedata
+slug: why-plot-the-data
 categories: []
 tags: []
 ---
 
-In data science, there's always some hip new technology, model, or package to try out. It's great to work in such a growing field, but sometimes I tire from all the newness. When that happens, I hearken back to the words of an old professor of mine:
+In data science there's always some new technology to try out. It's great to work in such a growing field, but sometimes it feels hard to keep up. When that happens, I remember the first step of any data analysis:
 
-> Always **plot the data**.
+> Plot the data.
 
-This pearl has followed me from my first semester of grad school to this day, so coming up with a name for my personal website was easy: plotthedata.
+This was the refrain of one of my mentor professors in grad school, and it has stuck with me ever since. Dreaming up a name for my personal website was easy: plot the data.
 
 # Case Study: Anscombe's Quartet
 
-When beginning any data analysis, it's easy to jump right to the statistics, but so much can be missed when you don't plot the data. A famous group of data sets exemplifies this folly: [Anscombe's quartet](https://en.wikipedia.org/wiki/Anscombe%27s_quartet). And it's one of R's built-in data sets!
+Let's look at a classic example. [Anscombe's quartet](https://en.wikipedia.org/wiki/Anscombe's_quartet) was created to expose the pitfall of not plotting the data. And it's one of R's built-in data sets!
 
 ```{r, anscombe}
 head(anscombe)
@@ -28,9 +28,9 @@ Unfortunately, `anscombe` breaks the first rule of tidy data:
 
 > Each variable must have its own column.
 
-Let's fix that. First, load the tidyvsere package:
+Let's fix that. First, load the tidyverse package:
 
-```{r, setup, message = FALSE}
+```{r, tidyverse, message = FALSE}
 library(tidyverse)
 ```
 
@@ -38,12 +38,12 @@ Now, tidy:
 
 ```{r, anscombe_tidy}
 anscombe_tidy <- anscombe %>% 
-  mutate(observation = row_number()) %>% 
-  gather(key, value, -observation) %>% 
-  separate(key, into = c("var", "set"), sep = 1) %>% 
-  spread(var, value)
-
-head(anscombe_tidy)
+  pivot_longer(everything(),
+    names_to = c(".value", "set"),
+    names_pattern = "(.)(.)"
+  ) %>%
+  arrange(set)
+anscombe_tidy
 ```
 
 ## Summary Statistics
@@ -66,7 +66,11 @@ The summary statistics are nearly identical! That's weird. Let's run some models
 
 ## Model
 
-Each data set has a single continuous explanatory variable and single continuous response variable. Sounds like a job for simple linear regression! Now, we *could* run four separate regressions, but that's no fun. This is R! We have the power to do better! Let's use the power of `tidyr::nest()`:
+Each data set has one continuous explanatory variable and one continuous response variable. Sounds like a job for simple linear regression! Now, we *could* run four separate regressions, but that's no fun. This is R! We can do better! Let's use the power of the tidymodels package:
+
+```{r, tidymodels, message = FALSE}
+library(tidymodels)
+```
 
 ```{r, nest_by_set}
 by_set <- anscombe_tidy %>% 
@@ -86,37 +90,40 @@ Now, let's map the model function to our nested data frame:
 
 ```{r, map_model}
 by_set <- by_set %>% 
-  mutate(model = map(data, set_model))
+  mutate(fit = map(data, set_model))
 ```
 
 We now have a columns that contains a list of our data and a list of our models. Let's use the broom package to extract some of the parameter estimates:
 
 ```{r, tidy_fit}
-library(broom)
-
 by_set %>% 
-  mutate(fit = map(model, tidy)) %>% 
-  select(set, fit) %>% 
-  unnest(fit) %>% 
+  mutate(tidied = map(fit, tidy)) %>% 
+  select(set, tidied) %>% 
+  unnest(tidied) %>% 
   arrange(term, set)
 ```
 
-Wow! We can see clearly that the summary statistics *and* model summaries are nearly identical for all data sets. This is bananas. 
+Wow! We can see clearly that the summary statistics *and* model summaries are nearly identical for all data sets. This is crazy!
 
 ## Plot
 
-Okay, we've avoided it long enough. It's time to plot the data.
+Okay, we've put it off long enough. It's time to plot the data.
 
 ```{r, plot}
 anscombe_tidy %>% 
   ggplot(aes(x, y)) + 
   geom_point() + 
   facet_wrap(~set) + 
-  geom_smooth(method = "lm", se = FALSE)
+  geom_smooth(method = "lm", formula = y ~ x)
 ```
 
-And the curtain is lifted. We can see clearly that these are wildly different data sets! We would be lost on all accounts if we neglected to **plot the data**.
+And the curtain is lifted. We can clearly see that each set is quite different:
+
+* Set 1 is a linear relationship with some variance.
+* Set 2 is curvilinear.
+* An outlier messes up a linear relationship in set 3.
+* Another outlier in set 4 creates a relationship when there isn't one.
 
 # Conclusion
 
-This has been a contrived example, but it serves to prove a larger point: the fundamentals are important. Next time you are staring down the chasm between your current skill set and where you want to be, do me a favor: stop, take a deep breath, and **plot the data**.
+The jig is up. This is a contrived example, but it proves a larger point: don't neglect the fundamentals. Next time you are starting an analysis, do yourself a favor and don't forget to **plot the data**.
