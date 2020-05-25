@@ -1,0 +1,126 @@
+---
+title: In praise of time series
+author: Ryan Chitwood
+date: '2020-02-01'
+publishdate: '2020-02-01'
+slug: in-praise-of-time-series
+categories: []
+tags: []
+---
+
+
+
+<p>In true plotthedata fashion, I’ve been reading Tufte’s classic <a href="https://www.edwardtufte.com/tufte/books_vdqi">book</a> on statistical graphics, <em>The Visual Display of Quantitative Information</em>. I especially love reading about the history of data visualization. For instance, did you know that <a href="https://en.wikipedia.org/wiki/William_Playfair">William Playfair</a>], the founder of graphical methods of statistics, and his mathematician brother <a href="https://en.wikipedia.org/wiki/John_Playfair">John</a> were contemporaries of <a href="https://en.wikipedia.org/wiki/James_Hutton">James Hutton</a>, the father of modern geology. These Scots don’t play!</p>
+<p>Data visualization didn’t start with William Playfair, however. For example, this graph depicting planetary movements dates from the around the 10th century!</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mouvement_des_planètes_au_cours_du_temps.png/1280px-Mouvement_des_planètes_au_cours_du_temps.png" style="width:100.0%" /></p>
+<p>And it’s just this kind of graphic that I want to discuss today: the humble time series.</p>
+<div id="case-study-the-european-stock-market-dataset" class="section level1">
+<h1>Case Study: The European Stock Market Dataset</h1>
+<p>I’m a big fan of R’s build in datasets<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> and feature them heavily in this blog. Financial data make for great time series, and this one is no exception. First, let’s see what the data look like:</p>
+<pre class="r"><code>EuStockMarkets</code></pre>
+<pre><code>## Time Series:
+## Start = c(1991, 130) 
+## End = c(1998, 169) 
+## Frequency = 260 
+##              DAX    SMI    CAC   FTSE
+## 1991.496 1628.75 1678.1 1772.8 2443.6
+## 1991.500 1613.63 1688.5 1750.5 2460.2
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 1858 rows ]</code></pre>
+<p>Here’s some info from the help file:</p>
+<blockquote>
+<p>Contains the daily closing prices of major European stock indices: Germany DAX (Ibis), Switzerland SMI, France CAC, and UK FTSE. The data are sampled in business time, i.e., weekends and holidays are omitted.</p>
+</blockquote>
+<div id="plot" class="section level2">
+<h2>Plot</h2>
+<p>Now, I keep it tidy like the best of them, but sometimes base R can be a bit magical. Check out the default plot for time series.</p>
+<pre class="r"><code>plot(EuStockMarkets)</code></pre>
+<p><img src="/post/2020-02-01-in-praise-of-time-series_files/figure-html/base-plot-1.png" width="672" /></p>
+<p>I mean, that’s pretty good looking! You go base R.</p>
+</div>
+<div id="tidy" class="section level2">
+<h2>Tidy</h2>
+<p>The base R stops here. It’s time to get tidy.</p>
+<pre class="r"><code>library(tidyverse)
+library(tsibble)</code></pre>
+<p>The tsibble package extends the tidyverse’s tibble to accommodate time series. There are few things to keep in mind:</p>
+<ol style="list-style-type: decimal">
+<li>Index is a variable with inherent ordering from past to present.</li>
+<li>Key is a set of variables that define observational units over time.</li>
+<li>Each observation should be uniquely identified by index and key.</li>
+<li>Each observational unit should be measured at a common interval, if regularly spaced.</li>
+</ol>
+<pre class="r"><code>eu_stock_markets &lt;- as_tsibble(EuStockMarkets) %&gt;% 
+  mutate(index = as.Date(index))
+
+eu_stock_markets</code></pre>
+<pre><code>## # A tsibble: 7,440 x 3 [1D]
+## # Key:       key [4]
+##    index      key   value
+##    &lt;date&gt;     &lt;chr&gt; &lt;dbl&gt;
+##  1 1991-07-01 DAX   1629.
+##  2 1991-07-02 DAX   1614.
+##  3 1991-07-03 DAX   1607.
+##  4 1991-07-05 DAX   1621.
+##  5 1991-07-06 DAX   1618.
+##  6 1991-07-08 DAX   1611.
+##  7 1991-07-09 DAX   1631.
+##  8 1991-07-10 DAX   1640.
+##  9 1991-07-12 DAX   1635.
+## 10 1991-07-13 DAX   1646.
+## # … with 7,430 more rows</code></pre>
+<p>For whatever reason, conversion to a tsibble resulted in a datetime when we only need a date. On the plus side, <code>as_tsibble()</code> does some nice tidying for us: the <code>key</code> column represents the four indices in our original data, but now in a long format.</p>
+</div>
+<div id="summary-statistics" class="section level2">
+<h2>Summary Statistics</h2>
+<p>The tsibble package also gives us some nice grouping features for time series. For example, we can calculate annual means.</p>
+<pre class="r"><code>library(tidyverse)
+
+eu_stock_markets %&gt;% 
+  group_by_key() %&gt;% 
+  index_by(year_month = ~ year(.)) %&gt;% 
+  summarise(mean = mean(value)) %&gt;% 
+  pivot_wider(
+    names_from = key, 
+    values_from = mean
+  )</code></pre>
+<pre><code>## # A tibble: 8 x 5
+##   year_month   CAC   DAX  FTSE   SMI
+##        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1       1991 1796. 1602. 2542. 1686.
+## 2       1992 1853. 1638. 2558. 1853.
+## 3       1993 2014. 1800. 2955. 2369.
+## 4       1994 2062. 2124. 3146. 2718.
+## 5       1995 1872. 2135. 3342. 2824.
+## 6       1996 2071. 2559. 3820. 3609.
+## 7       1997 2743. 3689. 4670. 5165.
+## 8       1998 3719. 5156. 5748. 7332.</code></pre>
+</div>
+<div id="more-plots" class="section level2">
+<h2>More Plots</h2>
+<p>This wouldn’t be plotthedata if we didn’t get gg with it. The feasts package provides several ggplot extensions for tsibble objects. Firstly, let’s look at <code>autoplot()</code>. For a regular tsibble object, it gives us an alternative to base R’s plotting method for ts objects.</p>
+<pre class="r"><code>library(feasts)</code></pre>
+<pre><code>## Loading required package: fabletools</code></pre>
+<pre class="r"><code>eu_stock_markets %&gt;% 
+  autoplot()</code></pre>
+<pre><code>## Plot variable not specified, automatically selected `.vars = value`</code></pre>
+<p><img src="/post/2020-02-01-in-praise-of-time-series_files/figure-html/autoplot-1.png" width="672" /></p>
+<p>Next let’s take a look at a seasonal plot.</p>
+<pre class="r"><code>eu_stock_markets %&gt;% 
+  fill_gaps() %&gt;% 
+  gg_season()</code></pre>
+<pre><code>## Plot variable not specified, automatically selected `y = value`</code></pre>
+<pre><code>## Warning: Removed 7 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/post/2020-02-01-in-praise-of-time-series_files/figure-html/gg_season-1.png" width="672" /></p>
+<p>Often time series exhibit seasonality, but it doesn’t look like there’s much going on here. The growth year-over-year growth overshadows any seasonality that might exist on this scale. We could look at different periods of seasonality, but for now we’ll stick with this.</p>
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>With a long history and enduring popularity, time series are a type of data visualization every data scientist should be familiar with. They are just so intuitive for viewers. We’ll explore these more in the future, but for now you know how to start visualizing time series in R!</p>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Tip: run <code>library(help = "datasets")</code> to list all of R’s built-in datasets.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
