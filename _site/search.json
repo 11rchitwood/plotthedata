@@ -1,17 +1,17 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "plotthedata",
-    "section": "",
-    "text": "No matching items"
-  },
-  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "Ryan Chitwood",
     "section": "",
     "text": "Ryan Chitwood is a Quantitative Analyst at Synovus. Before that he was the Research & Data Analyst at PAEA. plotthedata is his personal website and portfolio. Each post is a recreation of a past project he worked on. In his spare time, Ryan enjoys playing basketball and hanging out with his family."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "plotthedata",
+    "section": "",
+    "text": "Post With Code\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -26,19 +26,5 @@
     "title": "Welcome To My Blog",
     "section": "",
     "text": "Since this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
-  },
-  {
-    "objectID": "about.html#education",
-    "href": "about.html#education",
-    "title": "Ryan Chitwood",
-    "section": "Education",
-    "text": "Education\nUniversity of Georgia | Athens, GA MS in Forest Resources | Aug 2015 - Dec 2017\nUniversity of Georgia | Athens, GA BS in Ecology | Aug 2011 - May 2015"
-  },
-  {
-    "objectID": "about.html#experience",
-    "href": "about.html#experience",
-    "title": "Ryan Chitwood",
-    "section": "Experience",
-    "text": "Experience\nSynovus | Quantitative Analyst | Jan 2021 - present\nPAEA | Research & Data Analyst | Jan 2019 - Dec 2020"
   }
 ]
