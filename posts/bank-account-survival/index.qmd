@@ -1,0 +1,13 @@
+---
+title: "Bank Account Survival Analysis"
+date: "2022-09-01"
+---
+
+Ever wondered how long your bank account will last?
+Your bank wants to know that too.
+
+```{r plot}
+library(survival)
+fit1 <- survfit(Surv(futime, fustat) ~ resid.ds, data = ovarian)
+plot(fit1)
+```

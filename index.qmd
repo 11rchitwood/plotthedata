@@ -1,27 +1,10 @@
 ---
 listing:
   contents: "posts/*/index.qmd"
+  sort: "date"
   feed: true
   type: grid
   fields: [image, title, description]
 page-layout: full
 title-block-banner: true
 ---
-
-# Planned Posts
-
--   A Tidy Forecasting Workflow
-
--   Bank Account Survival Analysis
-
--   Diversity Loss During College Admissions
-
--   Tidying Survey Data
-
--   Classifying Bird Song Recordings
-
--   Point Process Models for Bird Nest Locations
-
--   American Dipper Habitat Suitability
-
--   Parental Care Tradeoffs During Songbird Nesting
