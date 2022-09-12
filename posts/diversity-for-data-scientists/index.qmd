@@ -1,0 +1,6 @@
+---
+title: "Diversity For Data Scientists"
+date: "2021-06-01"
+---
+
+What data science can (and can't) teach you about diversity, equity and inclusion.
