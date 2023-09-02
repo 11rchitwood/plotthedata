@@ -1,6 +1,18 @@
 ---
-title: "Diversity For Data Scientists"
+title: "Diversity for Data Scientists"
 date: "2021-06-01"
 ---
 
 What data science can (and can't) teach you about diversity, equity and inclusion.
+
+# Lesson 1: Diversity is a Property of a Group
+
+A metric like Simpson's diversity index can measure diversity of group, but an individual cannot be labelled as "diverse." Instead, individuals can be over- or underrepresented with respect to a group.
+
+# Lesson 2: Bias Begets Bias
+
+Randomization defeats bias, but we rarely randomize.
+
+# Lesson 3: The Tyranny of the Mean
+
+Follow black male from grade school through med school.
