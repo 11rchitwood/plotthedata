@@ -1,0 +1,8 @@
+---
+title: "The Tyranny of the Mean"
+date: "2021-06-01"
+---
+
+As data scientists, we often have a laser-focus on the problem at hand. It usually boils down to increasing or decreasing a group summary statistic like the mean. However, differences in a population mean often don't reflect the full picture of individual lived experiences within that population.
+
+Example: Follow 100 white men and 100 black men who all want to be physicians.
