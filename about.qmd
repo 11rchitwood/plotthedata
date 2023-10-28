@@ -5,4 +5,6 @@ about:
   template: jolla
 ---
 
-Ryan Chitwood is a Quantitative Analyst at [Synovus](https://www.synovus.com/). Before that he was the Research & Data Analyst at [PAEA](https://paeaonline.org/). [plotthedata](https://plotthedata.com/) is his personal website and portfolio. Each post is a recreation of a past project he worked on. In his spare time, Ryan enjoys playing basketball and hanging out with his family.
+Greetings! My name is Ryan Chitwood. This is [plotthedata](#0), my blog about data science and the like. The name comes from a grad school statistics professor I had whose number one rule was "Always plot the data." Each post culminates in a flagship plot that tries to tell the post's main story.
+
+A bit more about me. I am a Quantitative Analyst at [Synovus](#0). Before that I was the Research & Data Analyst at [PAEA](#0). I have degrees in ecology and wildlife biology from the University of Georgia. While I was there, I studied [black-throated blue warbler](https://www.allaboutbirds.org/guide/Black-throated_Blue_Warbler/id) population dynamics. In my spare time, I enjoy playing basketball and hanging out with my family.
