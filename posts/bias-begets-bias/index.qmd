@@ -1,6 +1,6 @@
 ---
 title: "Bias Begets Bias"
-date: "2021-06-01"
+date: "2020-08-01"
 ---
 
 Randomization defeats bias, but we rarely randomize for three reasons:

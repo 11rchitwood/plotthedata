@@ -1,20 +1,14 @@
 ---
 title: "Diversity for Data Scientists"
-date: "2021-06-01"
+date: "2020-06-01"
 ---
 
-One thing all data scientist should know about diversity, equity, and inclusion is that **diversity is a property of group, not an individual**. Here's what I mean.
+One thing all data scientists should know about diversity, equity, and inclusion is that **diversity is a property of group, not an individual**. Here's what I mean.
 
-Have you ever heard someone call someone that didn't look like them a "diverse person." I have. It's nonsense. I get the confusion. The renewed discussion on DEI around the world is an overall good thing, but I think we miss the boat on the term diversity. So let's bring the data to bear on diversity.
+Have you ever called someone "diverse?" It's a common mistake. The renewed discussion on DEI around the world is an overall good thing, but I think we miss the boat on the term diversity. So let's bring the data to bear on diversity.
 
-Example: US congress diversity
+# Racial & Ethnic Diversity: U.S. Congress vs. Population
 
-# Lesson 2: Bias Begets Bias
+```{r}
 
-Randomization defeats bias, but we rarely randomize.
-
-Example: effects of a new teaching method on test scores. You really need a randomized control trial. Historical observational studies get confounded by socioeconomic status etc.
-
-# Lesson 3: The Tyranny of the Mean
-
-Follow black male from grade school through med school.
+```
