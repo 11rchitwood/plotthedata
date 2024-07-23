@@ -6,14 +6,10 @@ date: "2022-09-01"
 Ever wondered how long your bank account will last?
 Your bank wants to know that too.
 
-```{r setup}
+```{r}
 library(knitr)
 library(survival)
-```
 
-Now, let's simulate some data.
-
-```{r data}
 # Set a seed for reproducibility
 set.seed(123)
 
@@ -24,17 +20,9 @@ status <- rbinom(n, size = 1, prob = 0.7)  # Generate censoring status (0=censor
 bank_data <- data.frame(time = time, status = status)
 
 kable(head(bank_data))
-```
 
-Then, fit a model.
-
-```{r}
 # Fit a Kaplan-Meier estimator
 (fit <- survfit(Surv(time, status) ~ 1, data = bank_data))
-```
 
-Finally, plot the data.
-
-```{r}
 plot(fit)
 ```
