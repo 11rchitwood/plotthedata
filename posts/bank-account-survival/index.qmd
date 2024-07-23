@@ -10,19 +10,29 @@ Your bank wants to know that too.
 library(knitr)
 library(survival)
 
-# Set a seed for reproducibility
+# Set seed for reproducibility
 set.seed(123)
 
-# Simulate data for bank accounts
-n <- 100  # Number of bank accounts
-time <- rexp(n, rate = 0.1)  # Generate random survival times (exponential distribution)
-status <- rbinom(n, size = 1, prob = 0.7)  # Generate censoring status (0=censored, 1=event)
-bank_data <- data.frame(time = time, status = status)
+# Simulate data for older customers (boomers)
+n_boomers <- 50
+time_boomers <- rexp(n_boomers, rate = 0.08)  # Lower rate for longer average time
+status_boomers <- rbinom(n_boomers, size = 1, prob = 0.6)  # Lower probability of event
+boomers_data <- data.frame(time = time_boomers, status = status_boomers, birth_year = rnorm(n_boomers, mean = 1955, sd = 5), strategy = "Envelopes")
 
-kable(head(bank_data))
+# Simulate data for younger customers (millennials)
+n_millennials <- 50
+time_millennials <- rexp(n_millennials, rate = 0.15)  # Higher rate for shorter average time
+status_millennials <- rbinom(n_millennials, size = 1, prob = 0.8)  # Higher probability of event
+millennials_data <- data.frame(time = time_millennials, status = status_millennials, birth_year = rnorm(n_millennials, mean = 1999, sd = 3), strategy = "Emergency Fund")
+
+# Combine the data for both customer types
+bank_data <- rbind(boomers_data, millennials_data)
 
 # Fit a Kaplan-Meier estimator
-(fit <- survfit(Surv(time, status) ~ 1, data = bank_data))
+fit <- survfit(Surv(time, status) ~ 1, data = bank_data)
 
-plot(fit)
+# Plot the survival curve using base R
+plot(fit, col = c("blue", "red"), lty = c(1, 2), lwd = 2, xlab = "Time", ylab = "Survival Probability", main = "Survival Curve for Bank Accounts by Customer Type")
+legend("topright", legend = unique(bank_data$strategy), col = c("blue", "red"), lty = c(1, 2), lwd = 2)
 ```
+
