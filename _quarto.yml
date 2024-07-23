@@ -3,6 +3,8 @@ project:
 
 website:
   title: "plotthedata"
+  description: "My Portfolio"
+  site-url: https://plotthedata.com
   navbar:
     right:
       - about.qmd
