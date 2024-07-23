@@ -1,6 +1,7 @@
 ---
 title: "Bank Account Survival Analysis"
 date: "2022-09-01"
+draft: true
 ---
 
 Ever wondered how long your bank account will last?
@@ -35,4 +36,3 @@ fit <- survfit(Surv(time, status) ~ 1, data = bank_data)
 plot(fit, col = c("blue", "red"), lty = c(1, 2), lwd = 2, xlab = "Time", ylab = "Survival Probability", main = "Survival Curve for Bank Accounts by Customer Type")
 legend("topright", legend = unique(bank_data$strategy), col = c("blue", "red"), lty = c(1, 2), lwd = 2)
 ```
-

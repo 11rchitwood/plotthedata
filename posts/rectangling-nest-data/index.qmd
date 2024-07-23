@@ -1,11 +1,14 @@
 ---
 title: Rectangling Nested Data
 date: "2023-11-14"
+draft: true
 ---
 
 A fun example of how to "rectangle" data about planets and their satellites.
 
-This is another reflection form [Array Cast Episode 66](https://www.arraycast.com/episodes/episode66-tali-beynon) with guest [Tali Beynon](https://taliesin.ai). Tali mentioned the [Planets dataset in Mathematica](https://tali.link/projects/mathematica/dataset/). I want to take a sample of this dataset and show how I would work with it in R.
+This is another reflection form [Array Cast Episode 66](https://www.arraycast.com/episodes/episode66-tali-beynon) with guest [Tali Beynon](https://taliesin.ai).
+Tali mentioned the [Planets dataset in Mathematica](https://tali.link/projects/mathematica/dataset/).
+I want to take a sample of this dataset and show how I would work with it in R.
 
 # Data
 
@@ -23,3 +26,4 @@ planets
 satellites <- read_csv("https://raw.githubusercontent.com/devstronomy/nasa-data-scraper/master/data/csv/satellites.csv", show_col_types = FALSE)
 satellites
 ```
+

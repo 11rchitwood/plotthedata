@@ -1,11 +1,14 @@
 ---
 title: The Power of Axis Naming
 date: "2023-11-10"
+draft: true
 ---
 
 The R language floors me sometimes with how much good stuff has been there form the beginning.
 
-Recently I was listening to [Array Cast Episode 66](https://www.arraycast.com/episodes/episode66-tali-beynon), where the panel and their guest, [Tali Beynon](https://taliesin.ai) discussed the axis naming. It struck me that R has had axis naming from the get-go, so let me demonstrate. I'll use Tali's excellent [Classical Array Algebra](https://math.tali.link/classical-array-algebra/) as a guide.
+Recently I was listening to [Array Cast Episode 66](https://www.arraycast.com/episodes/episode66-tali-beynon), where the panel and their guest, [Tali Beynon](https://taliesin.ai) discussed the axis naming.
+It struck me that R has had axis naming from the get-go, so let me demonstrate.
+I'll use Tali's excellent [Classical Array Algebra](https://math.tali.link/classical-array-algebra/) as a guide.
 
 # Basics
 
@@ -19,3 +22,4 @@ c(4, 0, 3) # a vector
 matrix(c(4, 0, 3, 2, 2, 1), nrow = 3) # a matrix
 array(c(4, 0, 3, 2, 2, 1, 1, 3, 2, 0, 1, 2), dim = c(3, 2, 2))
 ```
+

@@ -9,13 +9,19 @@ This post is an adaptation of a [talk](https://www.meetup.com/columbusgadatascie
 
 # Example 1: The BS Disease
 
-Uh oh! You just learned that you tested positive for the very serious **BS disease**. It affects 0.1% of the population. The test for the disease is 99% accurate. What are the chances that you *actually* have BS?
+Uh oh!
+You just learned that you tested positive for the very serious **BS disease**.
+It affects 0.1% of the population.
+The test for the disease is 99% accurate.
+What are the chances that you *actually* have BS?
 
 ## Bayes' Theorem
 
 $$ P(BS \mid test) = \frac{P(test \mid BS) \, P(BS)}{P(test)} $$
 
-The test is 99% accurate, so $P(test \mid BS) = 0.99$. BS prevalence is 0.1%, so $P(BS) = 0.001$. We want to know chance of testing positive, $P(test)$, so we reformulate like so:
+The test is 99% accurate, so $P(test \mid BS) = 0.99$.
+BS prevalence is 0.1%, so $P(BS) = 0.001$.
+We want to know chance of testing positive, $P(test)$, so we reformulate like so:
 
 $$P(test) = P(BS) \times P(test \mid BS) + P(-BS) \times P(test \mid -BS)$$
 
@@ -59,7 +65,9 @@ We can confront our **model** with the **data** and incorporate our **prior** un
 
 Suppose your manager approaches you and says,
 
-> We're testing an exciting new web feature! Version A has a red button, and version B has a green button. Which version yields more conversions?"
+> We're testing an exciting new web feature!
+> Version A has a red button, and version B has a green button.
+> Which version yields more conversions?"
 
 How can you answer this question?
 
