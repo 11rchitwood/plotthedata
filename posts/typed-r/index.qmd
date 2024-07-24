@@ -18,10 +18,8 @@ In words, the distance between two points is the square root of the sum of the s
 In math,
 
 $$
-d(p,q) = \sqrt{(q_1 - p_1) ^ 2 + (q_2 - p_2) ^ 2}
+d(p,q) = \sqrt{\sum_{i=1}^n(q_i - p_i) ^ 2}
 $$
-
-where point $p$ has Cartesian coordinates $(p_1,p_2)$ and point $q$ has Cartesian coordinates $(q_1,q_2)$.
 
 # Base R
 
