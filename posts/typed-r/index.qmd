@@ -16,7 +16,7 @@ In words, the distance between two points is the square root of the sum of the s
 In math,
 
 $$
-d(p,q) = \sqrt{(p_1 - q_1) ^ 2 + (p_2 - q_2) ^ 2}
+d(p,q) = \sqrt{(q_1 - p_1) ^ 2 + (q_2 - p_2) ^ 2}
 $$
 
 where point $p$ has Cartesian coordinates $(p_1,p_2)$ and point $q$ has Cartesian coordinates $(q_1,q_2)$.
@@ -76,8 +76,12 @@ Spread the word *{typed}* R is awesome!
 Obligatory plot.
 
 ```{r}
-plot(rbind(p, q, c(4, 2)))
-segments(p[1], p[2], q[1], q[2])
-segments(p[1], p[2], q[1], p[2])
-segments(q[1], p[2], q[1], q[2])
+plot(rbind(p, q), type = "o", pch = 19, xlim = c(0, 4.5), ylim = c(0, 7))
+text(2, 4, "d(p,q)")
+text(1, 2.5, "p")
+text(4.5, 6, "q")
+segments(0, p[2], q[1], p[2], lty = "dashed")
+segments(0, q[2], q[1], q[2], lty = "dashed")
+segments(p[1], 0, p[1], p[2], lty = "dashed")
+segments(q[1], 0, q[1], q[2], lty = "dashed")
 ```
