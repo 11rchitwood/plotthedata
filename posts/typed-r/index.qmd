@@ -3,6 +3,8 @@ title: "Typed R"
 date: "2024-08-01"
 ---
 
+R is my *type* of programming language.
+
 Base R is awesome.
 It's pretty cool that R is both an [array language](https://en.wikipedia.org/wiki/Array_programming) and a [Lisp](https://en.wikipedia.org/wiki/Lisp_(programming_language)) (or at least heavily influenced by Lisp).
 Like these two influences, R is a dynamic language.
@@ -30,8 +32,8 @@ With that assumption, here's a simple implementation.
 distance <- function(p, q) {
   sqrt(sum((p - q) ^ 2))
 }
-p <- c(1, 2)
-q <- c(4, 6)
+p <- c(x = 1, y = 1)
+q <- c(x = 5, y = 4)
 distance(p, q)
 ```
 
@@ -76,12 +78,12 @@ Spread the word *{typed}* R is awesome!
 Obligatory plot.
 
 ```{r}
-plot(rbind(p, q), type = "o", pch = 19, xlim = c(0, 4.5), ylim = c(0, 7))
-text(2, 4, "d(p,q)")
-text(1, 2.5, "p")
-text(4.25, 6, "q")
-segments(0, p[2], q[1], p[2], lty = "dashed")
-segments(0, q[2], q[1], q[2], lty = "dashed")
-segments(p[1], 0, p[1], p[2], lty = "dashed")
-segments(q[1], 0, q[1], q[2], lty = "dashed")
+plot(rbind(p, q), type = "o", pch = 19, xlim = c(0, 6), ylim = c(0, 5))
+text(3, 3, "d(p,q)")
+text(1, 1.5, "p")
+text(5, 4.5, "q")
+segments(0, p["y"], q["x"], p["y"], lty = "dashed")
+segments(0, q["y"], q["x"], q["y"], lty = "dashed")
+segments(p["x"], 0, p["x"], p["y"], lty = "dashed")
+segments(q["x"], 0, q["x"], q["y"], lty = "dashed")
 ```
