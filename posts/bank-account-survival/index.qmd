@@ -8,31 +8,39 @@ Ever wondered how long your bank account will last?
 Your bank wants to know that too.
 
 ```{r}
-library(knitr)
 library(survival)
 
 # Set seed for reproducibility
 set.seed(123)
 
-# Simulate data for older customers (boomers)
-n_boomers <- 50
-time_boomers <- rexp(n_boomers, rate = 0.08)  # Lower rate for longer average time
-status_boomers <- rbinom(n_boomers, size = 1, prob = 0.6)  # Lower probability of event
-boomers_data <- data.frame(time = time_boomers, status = status_boomers, birth_year = rnorm(n_boomers, mean = 1955, sd = 5), strategy = "Envelopes")
+# Create fake data for customers
+customers <- data.frame(
+  customer_id = 1:100,
+  birthday = sample(1950:2000, 100, replace = TRUE)
+)
 
-# Simulate data for younger customers (millennials)
-n_millennials <- 50
-time_millennials <- rexp(n_millennials, rate = 0.15)  # Higher rate for shorter average time
-status_millennials <- rbinom(n_millennials, size = 1, prob = 0.8)  # Higher probability of event
-millennials_data <- data.frame(time = time_millennials, status = status_millennials, birth_year = rnorm(n_millennials, mean = 1999, sd = 3), strategy = "Emergency Fund")
+# Create fake data for accounts
+accounts <- data.frame(
+  account_id = 1:500,
+  customer_id = sample(1:100, 500, replace = TRUE),
+  date = sample(seq(as.Date('2020/01/01'), as.Date('2021/12/31'), by = "day"), 500, replace = TRUE),
+  balance = rnorm(500, mean = 2000, sd = 1000)
+)
 
-# Combine the data for both customer types
-bank_data <- rbind(boomers_data, millennials_data)
+# Calculate average balance for each customer
+customer_balances <- aggregate(accounts$balance, by = list(customer_id = accounts$customer_id), FUN = mean)
+colnames(customer_balances) <- c("customer_id", "average_balance")
 
-# Fit a Kaplan-Meier estimator
-fit <- survfit(Surv(time, status) ~ 1, data = bank_data)
+# Define a "death" event based on a minimum balance threshold
+min_balance_threshold <- 1000
+customer_balances$death_event <- ifelse(customer_balances$average_balance < min_balance_threshold, 1, 0)
 
-# Plot the survival curve using base R
-plot(fit, col = c("blue", "red"), lty = c(1, 2), lwd = 2, xlab = "Time", ylab = "Survival Probability", main = "Survival Curve for Bank Accounts by Customer Type")
-legend("topright", legend = unique(bank_data$strategy), col = c("blue", "red"), lty = c(1, 2), lwd = 2)
+# Merge customer data with birth year
+customer_data <- merge(customers, customer_balances, by.x = "customer_id", by.y = "customer_id")
+
+# Fit a Kaplan-Meier estimator at the customer level
+fit_customer <- survfit(Surv(time = customer_data$average_balance, event = customer_data$death_event) ~ 1)
+
+# Plot the survival curve for customers
+plot(fit_customer, xlab = "Time", ylab = "Survival Probability", main = "Survival Curve for Customers")
 ```
