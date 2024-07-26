@@ -4,8 +4,72 @@ date: "2022-09-01"
 draft: true
 ---
 
-Ever wondered how long your bank account will last?
+Ever wondered how long your savings will last?
 Your bank wants to know that too.
+
+# Survival Analysis
+
+In my past life as an ecologist, we learned about survival models, but it turns out they show up in all sorts of domains (economics, engineering, and sociology to name a few).
+Wikipedia puts it well:
+
+> Survival analysis attempts to answer certain questions, such as what is the proportion of a population which will survive past a certain time?
+> Of those that survive, at what rate will they die or fail?
+> Can multiple causes of death or failure be taken into account?
+> How do particular circumstances or characteristics increase or decrease the probability of survival?
+
+Now that I work in finance, I've learned that Asset & Liability Managers (ALM) at the bank are interested in estimating the average life of various types of bank accounts.
+A good average life model allows ALM folks to predict future patterns in deposits, a hot topic in this current economic environment.
+
+# Average Life of Bank Accounts
+
+## Account Balances
+
+Let's start with some fake data.
+
+```{r}
+set.seed(123)
+library(knitr) # for `kable()`
+
+n_accounts <- 500
+minimum_balance <- 500
+
+balance_by_month <- expand.grid(
+  account_id = seq_len(n_accounts), 
+  month = factor(month.name, levels = month.name)
+)
+balance_by_month$balance <- rnorm(nrow(balance_by_month), mean = 2000, sd = 1000)
+
+balance_by_month |> 
+  head() |> 
+  kable()
+```
+
+So we've got monthly balances for one year from `r n_accounts` accounts.
+As always, let's plot the data!
+
+```{r}
+mean_balance_by_month <- aggregate(balance ~ month, balance_by_month, mean)
+barplot(balance ~ month, data = mean_balance_by_month)
+# do a line plot each account here
+```
+
+Okay, there's not a lot going on here, but let's dig a bit deeper.
+
+## Defining the Event
+
+Survival analysis is all about examining time-to-event phenomena.
+Back in ecology land, the event was death, but when does a bank die?
+Although it's becoming less popular, some banks still charge fees when accounts dip below a minimum balance.
+For this analysis, let's assume that the bank requires a minimum balance of \$`r minimum_balance`.
+So, when the accounts balance dips below the minimum balance, we'll call it dead.
+
+```{r}
+balance_by_month$event <- balance_by_month$balance < minimum_balance
+event_by_month <- table(balance_by_month$event, balance_by_month$month)
+barplot(event_by_month)
+```
+
+It looks like about `r round(sum(balance_by_month$event) / 12)` events happen each month, but right now the data
 
 ```{r}
 library(survival)
