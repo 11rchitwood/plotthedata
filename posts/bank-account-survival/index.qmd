@@ -61,7 +61,7 @@ Survival analysis is all about examining time-to-event phenomena.
 Back in ecology land, the event was death, but when does a bank die?
 Although it's becoming less popular, some banks still charge fees when accounts dip below a minimum balance.
 For this analysis, let's assume that the bank requires a minimum balance of \$`r minimum_balance`.
-So, when the accounts balance dips below the minimum balance, we'll call it dead.
+So, when an account's balance dips below the minimum balance, we'll call it dead.
 
 ```{r}
 balance_by_month$event <- balance_by_month$balance < minimum_balance
