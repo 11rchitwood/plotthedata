@@ -28,16 +28,24 @@ Let's start with some fake data.
 
 ```{r}
 set.seed(123)
+library(tidyverse)
 library(knitr) # for `kable()`
 
 n_accounts <- 500
-minimum_balance <- 500
 
-balance_by_month <- expand.grid(
-  account_id = seq_len(n_accounts), 
-  month = factor(month.name, levels = month.name)
-)
-balance_by_month$balance <- rnorm(nrow(balance_by_month), mean = 2000, sd = 1000)
+floor_zero <- function(x) ifelse(x < 0, 0, x)
+
+balance_by_month <- tidyr::expand_grid(
+  account_id = as.character(seq_len(n_accounts)), 
+  month = 1:12
+) |> 
+  dplyr::mutate(
+    balance = .data$account_id |> 
+      rnorm(mean = 0, sd = 1000) |> 
+      cumsum() |> 
+      floor_zero(),
+    .by = "account_id"
+  )
 
 balance_by_month |> 
   head() |> 
@@ -48,12 +56,15 @@ So we've got monthly balances for one year from `r n_accounts` accounts.
 As always, let's plot the data!
 
 ```{r}
-mean_balance_by_month <- aggregate(balance ~ month, balance_by_month, mean)
-barplot(balance ~ month, data = mean_balance_by_month)
-# do a line plot each account here
+ggplot(balance_by_month, aes(x = month, y = balance, fill = account_id)) +
+  geom_line(alpha = 0.2)
 ```
 
-Okay, there's not a lot going on here, but let's dig a bit deeper.
+We've got some random walks floored at zero.
+We're assuming that balances can't be negative.
+Some folks are doing really well!
+Others, not so much.
+But how do we translate these balances to survival models.
 
 ## Defining the Event
 
