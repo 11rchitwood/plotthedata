@@ -35,16 +35,17 @@ n_accounts <- 500
 
 floor_zero <- function(x) ifelse(x < 0, 0, x)
 
-balance_by_month <- tidyr::expand_grid(
+balance_by_month <- expand_grid(
   account_id = as.character(seq_len(n_accounts)), 
-  month = 1:12
+  date = ymd(080101) + months(0:11)
 ) |> 
-  dplyr::mutate(
-    balance = .data$account_id |> 
+  mutate(month = month(date, label = TRUE, abbr = FALSE)) |> 
+  group_by(account_id) |> 
+  mutate(
+    balance = account_id |> 
       rnorm(mean = 0, sd = 1000) |> 
       cumsum() |> 
-      floor_zero(),
-    .by = "account_id"
+      floor_zero()
   )
 
 balance_by_month |> 
@@ -56,31 +57,47 @@ So we've got monthly balances for one year from `r n_accounts` accounts.
 As always, let's plot the data!
 
 ```{r}
-ggplot(balance_by_month, aes(x = month, y = balance, fill = account_id)) +
+ggplot(balance_by_month, aes(x = date, y = balance, fill = account_id)) +
   geom_line(alpha = 0.2)
 ```
 
 We've got some random walks floored at zero.
 We're assuming that balances can't be negative.
-Some folks are doing really well!
-Others, not so much.
-But how do we translate these balances to survival models.
+It looks like some folks are doing really well but others not so much.
+How do we translate these balances to survival models.
 
 ## Defining the Event
 
 Survival analysis is all about examining time-to-event phenomena.
-Back in ecology land, the event was death, but when does a bank die?
-Although it's becoming less popular, some banks still charge fees when accounts dip below a minimum balance.
-For this analysis, let's assume that the bank requires a minimum balance of \$`r minimum_balance`.
-So, when an account's balance dips below the minimum balance, we'll call it dead.
+Back in ecology land, the event was death, but when does a bank account die?
+Earlier we floored balances at zero.
+Some banks charge overdraft fees, so when a customer reaches zero, they're likely to be charged a fee.
+We'll just assume that reaching zero means that a bank account is done for.
+First let's calculate the first month that the account hit zero.
+That's when the "death" event occurs.
 
 ```{r}
-balance_by_month$event <- balance_by_month$balance < minimum_balance
-event_by_month <- table(balance_by_month$event, balance_by_month$month)
-barplot(event_by_month)
+first_zero_month <- balance_by_month |> 
+  filter(balance == 0) |> 
+  summarise(first_zero_month = min(.data$month))
+
+ggplot(first_zero_month, aes(x = first_zero_month)) + 
+  geom_bar()
 ```
 
-It looks like about `r round(sum(balance_by_month$event) / 12)` events happen each month, but right now the data
+It looks like a cascade of death events.
+Most occur in the first month with fewer and fewer as the year goes on.
+But we've got a problem!
+We need to represent this in the data.
+In this analysis, we don't want bank accounts to suddenly come back alive!
+We need to define our event clearly.
+
+```{r}
+balance_by_month |> 
+  left_join(first_zero_month, by = "account_id") |> 
+  mutate(event = if_else(month >= first_zero_month, 1, 0)) |> 
+  select(account_id, month, event)
+```
 
 ```{r}
 library(survival)
