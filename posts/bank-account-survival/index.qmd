@@ -1,7 +1,6 @@
 ---
 title: "Bank Account Survival Analysis"
-date: "2022-09-01"
-draft: true
+date: "2023-09-01"
 ---
 
 Ever wondered how long your savings will last?
@@ -93,46 +92,43 @@ In this analysis, we don't want bank accounts to suddenly come back alive!
 We need to define our event clearly.
 
 ```{r}
-balance_by_month |> 
+event_by_month <- balance_by_month |> 
   left_join(first_zero_month, by = "account_id") |> 
   mutate(event = if_else(month >= first_zero_month, 1, 0)) |> 
+  mutate(month = as.integer(month)) |> 
   select(account_id, month, event)
+
+event_by_month |> 
+  head() |> 
+  kable()
 ```
+
+Now our event column stays put once the account balance hits zero.
+
+## Fitting Our First Survival Model
+
+Survival models are built in to R.
+Ain't that great?
+Let's fit a model.
 
 ```{r}
+#| classes: preview-image
 library(survival)
 
-# Set seed for reproducibility
-set.seed(123)
+fit_customer <- survfit(Surv(time = event_by_month$month, event = event_by_month$event) ~ 1)
 
-# Create fake data for customers
-customers <- data.frame(
-  customer_id = 1:100,
-  birthday = sample(1950:2000, 100, replace = TRUE)
-)
-
-# Create fake data for accounts
-accounts <- data.frame(
-  account_id = 1:500,
-  customer_id = sample(1:100, 500, replace = TRUE),
-  date = sample(seq(as.Date('2020/01/01'), as.Date('2021/12/31'), by = "day"), 500, replace = TRUE),
-  balance = rnorm(500, mean = 2000, sd = 1000)
-)
-
-# Calculate average balance for each customer
-customer_balances <- aggregate(accounts$balance, by = list(customer_id = accounts$customer_id), FUN = mean)
-colnames(customer_balances) <- c("customer_id", "average_balance")
-
-# Define a "death" event based on a minimum balance threshold
-min_balance_threshold <- 1000
-customer_balances$death_event <- ifelse(customer_balances$average_balance < min_balance_threshold, 1, 0)
-
-# Merge customer data with birth year
-customer_data <- merge(customers, customer_balances, by.x = "customer_id", by.y = "customer_id")
-
-# Fit a Kaplan-Meier estimator at the customer level
-fit_customer <- survfit(Surv(time = customer_data$average_balance, event = customer_data$death_event) ~ 1)
-
-# Plot the survival curve for customers
 plot(fit_customer, xlab = "Time", ylab = "Survival Probability", main = "Survival Curve for Customers")
 ```
+
+Base R plots are just the best sometimes.
+Now let's calculate the average life of an account using the Kaplan-Meier estimator.
+
+```{r}
+survival_prob <- fit_customer$surv
+times <- fit_customer$time
+delta_time <- c(times[1], diff(times))
+account_avg_life <- sum(survival_prob * delta_time)
+```
+
+There you have it!
+On average an account lasts `r round(account_avg_life)` months.
