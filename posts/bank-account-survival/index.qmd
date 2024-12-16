@@ -3,21 +3,15 @@ title: "Bank Account Survival Analysis"
 date: "2023-09-01"
 ---
 
-Ever wondered how long your savings will last?
-Your bank wants to know that too.
+Ever wondered how long your savings will last? Your bank wants to know that too.
 
 # Survival Analysis
 
-In my past life as an ecologist, we learned about survival models, but it turns out they show up in all sorts of domains (economics, engineering, and sociology to name a few).
-Wikipedia puts it well:
+In my past life as an ecologist, we learned about survival models, but it turns out they show up in all sorts of domains (economics, engineering, and sociology to name a few). Wikipedia puts it well:
 
-> Survival analysis attempts to answer certain questions, such as what is the proportion of a population which will survive past a certain time?
-> Of those that survive, at what rate will they die or fail?
-> Can multiple causes of death or failure be taken into account?
-> How do particular circumstances or characteristics increase or decrease the probability of survival?
+> Survival analysis attempts to answer certain questions, such as what is the proportion of a population which will survive past a certain time? Of those that survive, at what rate will they die or fail? Can multiple causes of death or failure be taken into account? How do particular circumstances or characteristics increase or decrease the probability of survival?
 
-Now that I work in finance, I've learned that Asset & Liability Managers (ALM) at the bank are interested in estimating the average life of various types of bank accounts.
-A good average life model allows ALM folks to predict future patterns in deposits, a hot topic in this current economic environment.
+Now that I work in finance, I've learned that Asset & Liability Managers (ALM) at the bank are interested in estimating the average life of various types of bank accounts. A good average life model allows ALM folks to predict future patterns in deposits, a hot topic in this current economic environment.
 
 # Average Life of Bank Accounts
 
@@ -52,28 +46,18 @@ balance_by_month |>
   kable()
 ```
 
-So we've got monthly balances for one year from `r n_accounts` accounts.
-As always, let's plot the data!
+So we've got monthly balances for one year from `r n_accounts` accounts. As always, let's plot the data!
 
 ```{r}
 ggplot(balance_by_month, aes(x = date, y = balance, fill = account_id)) +
   geom_line(alpha = 0.2)
 ```
 
-We've got some random walks floored at zero.
-We're assuming that balances can't be negative.
-It looks like some folks are doing really well but others not so much.
-How do we translate these balances to survival models.
+We've got some random walks floored at zero. We're assuming that balances can't be negative. It looks like some folks are doing really well but others not so much. How do we translate these balances to survival models.
 
 ## Defining the Event
 
-Survival analysis is all about examining time-to-event phenomena.
-Back in ecology land, the event was death, but when does a bank account die?
-Earlier we floored balances at zero.
-Some banks charge overdraft fees, so when a customer reaches zero, they're likely to be charged a fee.
-We'll just assume that reaching zero means that a bank account is done for.
-First let's calculate the first month that the account hit zero.
-That's when the "death" event occurs.
+Survival analysis is all about examining time-to-event phenomena. Back in ecology land, the event was death, but when does a bank account die? Earlier we floored balances at zero. Some banks charge overdraft fees, so when a customer reaches zero, they're likely to be charged a fee. We'll just assume that reaching zero means that a bank account is done for. First let's calculate the first month that the account hit zero. That's when the "death" event occurs.
 
 ```{r}
 first_zero_month <- balance_by_month |> 
@@ -84,12 +68,7 @@ ggplot(first_zero_month, aes(x = first_zero_month)) +
   geom_bar()
 ```
 
-It looks like a cascade of death events.
-Most occur in the first month with fewer and fewer as the year goes on.
-But we've got a problem!
-We need to represent this in the data.
-In this analysis, we don't want bank accounts to suddenly come back alive!
-We need to define our event clearly.
+It looks like a cascade of death events. Most occur in the first month with fewer and fewer as the year goes on. But we've got a problem! We need to represent this in the data. In this analysis, we don't want bank accounts to suddenly come back alive! We need to define our event clearly.
 
 ```{r}
 event_by_month <- balance_by_month |> 
@@ -107,9 +86,7 @@ Now our event column stays put once the account balance hits zero.
 
 ## Fitting Our First Survival Model
 
-Survival models are built in to R.
-Ain't that great?
-Let's fit a model.
+Survival models are built in to R. Ain't that great? Let's fit a model.
 
 ```{r}
 #| classes: preview-image
@@ -120,8 +97,7 @@ fit_customer <- survfit(Surv(time = event_by_month$month, event = event_by_month
 plot(fit_customer, xlab = "Time", ylab = "Survival Probability", main = "Survival Curve for Customers")
 ```
 
-Base R plots are just the best sometimes.
-Now let's calculate the average life of an account using the Kaplan-Meier estimator.
+Base R plots are just the best sometimes. Now let's calculate the average life of an account using the Kaplan-Meier estimator.
 
 ```{r}
 survival_prob <- fit_customer$surv
@@ -130,5 +106,4 @@ delta_time <- c(times[1], diff(times))
 account_avg_life <- sum(survival_prob * delta_time)
 ```
 
-There you have it!
-On average an account lasts `r round(account_avg_life)` months.
+There you have it! On average an account lasts `r round(account_avg_life)` months.
