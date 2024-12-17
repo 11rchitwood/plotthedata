@@ -5,8 +5,8 @@ about:
   template: jolla
 ---
 
-Greetings! My name is Ryan Chitwood. This is `plotthedata`, my blog about data science and the like. The name comes from a grad school statistics professor I had whose number one rule was "Always plot the data." Each post culminates in a flagship plot that tries to tell the post's main story.
+Greetings! My name is Ryan Chitwood. This is `plotthedata`, my data science portfolio. The name comes from a grad school statistics professor I had whose number one rule was "Always plot the data." Each post culminates in a flagship plot that tries to tell the post's main story.
 
-A bit more about me. I am a Quantitative Analyst at [Synovus](https://www.synovus.com). Before that I was the Research & Data Analyst at [PAEA](https://paeaonline.org). I have degrees in ecology and wildlife biology from the University of Georgia. While I was there, I studied [black-throated blue warbler](https://www.allaboutbirds.org/guide/Black-throated_Blue_Warbler/id) population dynamics. In my spare time, I enjoy playing basketball and hanging out with my family.
+A bit more about me. I am a Quantitative Analyst at [Synovus](https://www.synovus.com). Before that I was the Research & Data Analyst at [PAEA](https://paeaonline.org). I have degrees in ecology and wildlife biology from the University of Georgia. While I was there, I studied [Black-throated Blue Warbler](https://www.allaboutbirds.org/guide/Black-throated_Blue_Warbler) population dynamics. In my spare time, I enjoy playing basketball and hanging out with my family.
 
-If you interested in less technical, more personal stuff, check out [my blog](11rchitwood.github.io).
+If you're interested in less technical, more personal stuff, check out [my blog](11rchitwood.github.io).
