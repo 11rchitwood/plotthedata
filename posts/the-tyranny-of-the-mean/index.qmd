@@ -4,11 +4,8 @@ date: "2020-07-01"
 draft: true
 ---
 
-As data scientists, we often have a laser-focus on the problem at hand.
-It usually boils down to increasing or decreasing a group summary statistic like the mean.
-However, differences in a population mean often don't reflect the full picture of individual lived experiences within that population.
+As data scientists, we often have a laser-focus on the problem at hand. It usually boils down to increasing or decreasing a group summary statistic like the mean. However, differences in a population mean often don't reflect the full picture of individual lived experiences within that population.
 
-Example: Follow 100 white men and 100 black men on there paths to becoming physicians.
+Example: Follow a group of 100 students who want to become physicians.
 
 # Case Study: The Physician Path
-
