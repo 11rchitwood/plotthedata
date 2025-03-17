@@ -4,12 +4,8 @@ date: "2020-06-01"
 draft: true
 ---
 
-One thing all data scientists should know about diversity, equity, and inclusion is that **diversity is a property of group, not an individual**.
-Here's what I mean.
+One thing all data scientists should know about diversity, equity, and inclusion is that **diversity is a property of group, not an individual**. Here's what I mean.
 
-Have you ever called someone "diverse?" It's a common mistake.
-The renewed discussion on DEI around the world is an overall good thing, but I think we miss the boat on the term diversity.
-So let's bring the data to bear on diversity.
+Have you ever called someone "diverse?" It's a common mistake. The renewed discussion on DEI around the world is an overall good thing, but I think we miss the boat on the term diversity. So let's bring the data to bear on diversity.
 
 # Racial & Ethnic Diversity: U.S. Congress vs. Population
-
