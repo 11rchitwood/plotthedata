@@ -33,6 +33,7 @@ Already, I've got some issues here. I'm sure if this is the best data structure 
 id <- 0:9
 name <- c("Hero", "Dunn", "Sue", "Chi", "Thor", "Clive", "Hicks", "Devin", "Kate", "Klein")
 users <- data.frame(id, name)
+users
 ```
 
 The data frame is the fundamental data structure of data science, but is that the best way to represent this data? Maybe not. Anytime I see a two column data frame, I think about a named vector.
@@ -40,6 +41,7 @@ The data frame is the fundamental data structure of data science, but is that th
 ```{r}
 users <- id
 names(users) <- name
+users
 ```
 
 Next come the actual friendship data for our social network.
@@ -51,8 +53,8 @@ friendship_pairs = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 4), (4, 5), (5, 
 We've got a list of ID pairs. Why are we representing the individuals with numeric IDs? Can't we just use the names directly? I don't think performance is an issue since we are only dealing with 10 individuals. Plus, using names instead of integer IDs makes it clear that we aren't representing numbers. That way, we won't be tempted to do any arithmetic with IDs. That wouldn't make any sense. IRL, it'd probably make the most sense to use some kind of hash for this. That way we would avoid the issue of duplicate names.
 
 ```{r}
-pairs <- c(0L, 0L, 1L, 1L, 2L, 3L, 4L, 5L, 5L, 6L, 7L, 8L, 1L, 2L, 2L, 3L, 3L, 4L, 5L, 6L, 7L, 8L, 8L, 9L)
-friendship_pairs <- names(users)[match(friendship_pairs, users)]
+pairs <- c(0, 1, 0, 2, 1, 2, 1, 3, 2, 3, 3, 4, 4, 5, 5, 6, 5, 7, 6, 8, 7, 8, 8, 9)
+friendship_pairs <- names(users)[match(pairs, users)]
 friendship_pairs
 ```
 
@@ -68,3 +70,85 @@ friendship_pairs
 ```
 
 I chose `byrow = TRUE` because if we ever want to add new friendships, it probably makes sense to append them as new rows. I also just like this structure better because we can easily see who is friends with whom.
+
+The author expertly points out that a list of pairs is not the best way to work with the data. Neither is a matrix really. Let's transform the data.
+
+```{python}
+# Initialize the dict with an empty list for each user id:
+friendships = {user["id"]: [] for user in users}
+
+# And loop over the friendship pairs to populate it:
+for i, j in friendship_pairs:
+    friendships[i].append(j)  # Add j as a friend of user i
+    friendships[j].append(i)  # Add i as a friend of user j
+
+print(friendships)
+```
+
+The author chose a dictionary here for its fast look-ups. I agree. In R, the equivalent data structure is a list.
+
+```{r}
+compute_friendships <- function(user) {
+  c(
+    friendship_pairs[, 2][friendship_pairs[, 1] == user],
+    friendship_pairs[, 1][friendship_pairs[, 2] == user]
+  )
+}
+friendships <- lapply(names(users), compute_friendships)
+friendships
+```
+
+We don't like for-loops in R. The `apply()` family of functions are much better. The next question is "What's the average number of connections?"
+
+```{python}
+def number_of_friends(user):
+    """How many friends does _user_ have?"""
+    user_id = user["id"]
+    friend_ids = friendships[user_id]
+    return len(friend_ids)
+
+total_connections = sum(number_of_friends(user)
+                        for user in users)        # 24
+
+
+assert total_connections == 24
+
+num_users = len(users)                            # length of the users list
+avg_connections = total_connections / num_users   # 24 / 10 == 2.4
+
+
+assert num_users == 10
+assert avg_connections == 2.4
+```
+
+Too easy in R.
+
+```{r}
+mean(lengths(friendships))
+```
+
+Next, we want sort from most to least friends.
+
+```{python}
+# Create a list (user_id, number_of_friends).
+num_friends_by_id = [(user["id"], number_of_friends(user))
+                     for user in users]
+
+num_friends_by_id.sort(                                # Sort the list
+       key=lambda id_and_friends: id_and_friends[1],   # by num_friends
+       reverse=True)                                   # largest to smallest
+
+# Each pair is (user_id, num_friends):
+# [(1, 3), (2, 3), (3, 3), (5, 3), (8, 3),
+#  (0, 2), (4, 2), (6, 2), (7, 2), (9, 1)]
+
+
+assert num_friends_by_id[0][1] == 3     # several people have 3 friends
+assert num_friends_by_id[-1] == (9, 1)  # user 9 has only 1 friend
+```
+
+Again, easy in R.
+
+```{r}
+sort(lengths(friendships), decreasing = TRUE)
+```
