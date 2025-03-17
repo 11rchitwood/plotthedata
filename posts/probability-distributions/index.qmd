@@ -3,28 +3,17 @@ title: "Probability Distributions and Their Stories: Baller Edition"
 date: "2024-08-01"
 ---
 
-Can you ball with the best (probability distributions)?
-🏀
+Can you ball with the best (probability distributions)? 🏀
 
 # Fun with distributions
 
-The first time I ever learned about probability I was in math class at [St. Elmo](https://www.muscogee.k12.ga.us/about-us-clone/families-students/teaching-and-learning/advanced-learning-programs/gifted).
-I love math, and I loved going to St. Elmo once a week as a kid.
-There we were, a bunch of 4th- and 5th-graders ready to learn about games of chance and predicting the future!
-Except no.
-The teacher gave us bags of marbles.
+The first time I ever learned about probability I was in math class at [St. Elmo](https://www.muscogee.k12.ga.us/about-us-clone/families-students/teaching-and-learning/advanced-learning-programs/gifted). I love math, and I loved going to St. Elmo once a week as a kid. There we were, a bunch of 4th- and 5th-graders ready to learn about games of chance and predicting the future! Except no. The teacher gave us bags of marbles.
 
-> Each bag has 5 white marbles and 5 red ones.
-> Draw a marble and don't put it back.
-> What are the chances that the next marble is the same color?
+> Each bag has 5 white marbles and 5 red ones. Draw a marble and don't put it back. What are the chances that the next marble is the same color?
 
-Lame.
-So here I am years later righting this wrong (don't blame the teacher; blame the curriculum).
-We're going to learn about balling with probability distributions.
-Basketball that is.
+Lame. So here I am years later righting this wrong (don't blame the teacher; blame the curriculum). We're going to learn about balling with probability distributions. Basketball that is.
 
-NB: This entire post is based on the excellent tutorial, [Probability distributions and their stories](http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2018/tutorials/t3c_probability_stories.html), by [Justin Bois](http://bois.caltech.edu/).
-My aim is to translate Python code shown there to R using the {[distributions3](https://alexpghayes.github.io/distributions3/)} package and to come up with my own basketball examples for each distribution.
+NB: This entire post is based on the excellent tutorial, [Probability distributions and their stories](http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2018/tutorials/t3c_probability_stories.html), by [Justin Bois](http://bois.caltech.edu/). My aim is to translate Python code shown there to R using the {[distributions3](https://alexpghayes.github.io/distributions3/)} package and to come up with my own basketball examples for each distribution.
 
 # What is a probability distribution?
 
@@ -32,16 +21,11 @@ As usual, Wikipedia has [the definition](https://en.wikipedia.org/wiki/Probabili
 
 > A probability distribution is the mathematical function that gives the probabilities of occurrence of possible outcomes for an experiment.
 
-In my words, it's a mathematical description of the chances that an event happens.
-Probability distributions can describe discrete (typically countable) or continuous (typically measured) variables.
-Let's dive in.
+In my words, it's a mathematical description of the chances that an event happens. Probability distributions can describe discrete (typically countable) or continuous (typically measured) variables. Let's dive in.
 
 ## The distributions3 package
 
-The {[distributions3](https://alexpghayes.github.io/distributions3/)} package a provides a number of probability distributions as S3 objects.
-It also provides generic functions that work with each distribution.
-It's a really nice and tidy API.
-I think base R's probability functions should probably have been designed this way from the start.
+The {[distributions3](https://alexpghayes.github.io/distributions3/)} package a provides a number of probability distributions as S3 objects. It also provides generic functions that work with each distribution. It's a really nice and tidy API. I think base R's probability functions should probably have been designed this way from the start.
 
 The main generics are:
 
@@ -60,11 +44,9 @@ library(distributions3)
 
 ## Bernoulli distribution
 
-A *Bernoulli trial* is an experiment that has two outcomes that can be encoded as success ($y=1$) or failure ($y=0$).
-The result $y$ of a Bernoulli trial is Bernoulli distributed.
+A *Bernoulli trial* is an experiment that has two outcomes that can be encoded as success ($y=1$) or failure ($y=0$). The result $y$ of a Bernoulli trial is Bernoulli distributed.
 
-[Elena Delle Donne](https://en.wikipedia.org/wiki/Elena_Delle_Donne), the greatest free throw shooter of all time, has a career free throw success rate of 93.4%.
-The probability that she makes her next free throw is Bernoulli distributed.
+[Elena Delle Donne](https://en.wikipedia.org/wiki/Elena_Delle_Donne), the greatest free throw shooter of all time, has a career free throw success rate of 93.4%. The probability that she makes her next free throw is Bernoulli distributed.
 
 ```{r}
 X <- Bernoulli(0.7)
@@ -87,14 +69,11 @@ quantile(X, cdf(X, 0.7))
 
 ## Binomial
 
-What if we are interested in more than one shot?
-It turns out that the Bernoulli distribution is just a special case of the Binomial distribution where $N=1$.
+What if we are interested in more than one shot? It turns out that the Bernoulli distribution is just a special case of the Binomial distribution where $N=1$.
 
-If we perform $N$ Bernoulli trials, each with probability $\theta$ of success.
-The number of successes, $n$, is Binomially distributed.
+If we perform $N$ Bernoulli trials, each with probability $\theta$ of success. The number of successes, $n$, is Binomially distributed.
 
-[Shaquille O'Neal](https://en.wikipedia.org/wiki/Shaquille_O'Neal) will always be one of the most dominant big men of all time, but his free throw percentage, by comparison was infamously atrocious.
-He averaged just 52.7% from the line with an average of 9.3 free-throw attempts per game.
+[Shaquille O'Neal](https://en.wikipedia.org/wiki/Shaquille_O'Neal) will always be one of the most dominant big men of all time, but his free throw percentage, by comparison was infamously atrocious. He averaged just 52.7% from the line with an average of 9.3 free-throw attempts per game.
 
 ```{r}
 X <- Binomial(size = 10, p = 0.527)
