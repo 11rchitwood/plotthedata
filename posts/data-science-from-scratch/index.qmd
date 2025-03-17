@@ -1,0 +1,70 @@
+---
+title: "Data Science from Scratch"
+date: "2025-03-17"
+draft: true
+---
+
+Is the R vs Python debate still alive in 2025?
+
+I'm not sure, but I was digging into an old tome by [Joel Grus](https://joelgrus.com) entitled *Data Science from Scratch*. It's a great book, but reading through it this time reminded me of the old data science debate. Rather than wax philosophically on this topic, I will translate the code from the book's introduction and comment from there. It's always best to work through examples.
+
+# The Data
+
+The so-called "motivating hypothetical" is DataSciencester, *the* social network for data scientists. First, we're given a list of user data. Each item in the list is a dictionary. Each dictionary has an ID and a name.
+
+```{python}
+users = [
+    { "id": 0, "name": "Hero" },
+    { "id": 1, "name": "Dunn" },
+    { "id": 2, "name": "Sue" },
+    { "id": 3, "name": "Chi" },
+    { "id": 4, "name": "Thor" },
+    { "id": 5, "name": "Clive" },
+    { "id": 6, "name": "Hicks" },
+    { "id": 7, "name": "Devin" },
+    { "id": 8, "name": "Kate" },
+    { "id": 9, "name": "Klein" }
+]
+```
+
+Already, I've got some issues here. I'm sure if this is the best data structure to use for this in Python, but I definitely see a better way in R.
+
+```{r}
+id <- 0:9
+name <- c("Hero", "Dunn", "Sue", "Chi", "Thor", "Clive", "Hicks", "Devin", "Kate", "Klein")
+users <- data.frame(id, name)
+```
+
+The data frame is the fundamental data structure of data science, but is that the best way to represent this data? Maybe not. Anytime I see a two column data frame, I think about a named vector.
+
+```{r}
+users <- id
+names(users) <- name
+```
+
+Next come the actual friendship data for our social network.
+
+```{python}
+friendship_pairs = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 4), (4, 5), (5, 6), (5, 7), (6, 8), (7, 8), (8, 9)]
+```
+
+We've got a list of ID pairs. Why are we representing the individuals with numeric IDs? Can't we just use the names directly? I don't think performance is an issue since we are only dealing with 10 individuals. Plus, using names instead of integer IDs makes it clear that we aren't representing numbers. That way, we won't be tempted to do any arithmetic with IDs. That wouldn't make any sense. IRL, it'd probably make the most sense to use some kind of hash for this. That way we would avoid the issue of duplicate names.
+
+```{r}
+pairs <- c(0L, 0L, 1L, 1L, 2L, 3L, 4L, 5L, 5L, 6L, 7L, 8L, 1L, 2L, 2L, 3L, 3L, 4L, 5L, 6L, 7L, 8L, 8L, 9L)
+friendship_pairs <- names(users)[match(friendship_pairs, users)]
+friendship_pairs
+```
+
+Okay, now we've re-coded the data to just use the actual names. No need for IDs. But we lost the pair structure. We can fix that by restructuring the data as a matrix.
+
+```{r}
+friendship_pairs <- matrix(
+  data = friendship_pairs,
+  ncol = 2,
+  byrow = TRUE
+)
+friendship_pairs
+```
+
+I chose `byrow = TRUE` because if we ever want to add new friendships, it probably makes sense to append them as new rows. I also just like this structure better because we can easily see who is friends with whom.
