@@ -12,6 +12,4 @@ Randomization defeats bias, but we rarely randomize for three reasons:
 
 -   We often don't want to withhold desirable treatments from half of the treatment population
 
-Example: Test effect of a new method of teaching reading on test scores.
-You really need a randomized control trial.
-Historical observational studies get confounded by socioeconomic status etc.
+Example: Test effect of a new method of teaching reading on test scores. You really need a randomized control trial. Historical observational studies get confounded by socioeconomic status etc.
