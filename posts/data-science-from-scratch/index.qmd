@@ -50,28 +50,22 @@ Next come the actual friendship data for our social network.
 friendship_pairs = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 4), (4, 5), (5, 6), (5, 7), (6, 8), (7, 8), (8, 9)]
 ```
 
-We've got a list of ID pairs. Why are we representing the individuals with numeric IDs? Can't we just use the names directly? I don't think performance is an issue since we are only dealing with 10 individuals. Plus, using names instead of integer IDs makes it clear that we aren't representing numbers. That way, we won't be tempted to do any arithmetic with IDs. That wouldn't make any sense. IRL, it'd probably make the most sense to use some kind of hash for this. That way we would avoid the issue of duplicate names.
-
-```{r}
-pairs <- c(0, 1, 0, 2, 1, 2, 1, 3, 2, 3, 3, 4, 4, 5, 5, 6, 5, 7, 6, 8, 7, 8, 8, 9)
-friendship_pairs <- names(users)[match(pairs, users)]
-friendship_pairs
-```
-
-Okay, now we've re-coded the data to just use the actual names. No need for IDs. But we lost the pair structure. We can fix that by restructuring the data as a matrix.
+We've got a list of ID pairs. By the way, this data structure is called an [edge list](https://en.wikipedia.org/wiki/Edge_list). In R, it makes more sense to represent this as a two column matrix.
 
 ```{r}
 friendship_pairs <- matrix(
-  data = friendship_pairs,
+  data = c(0, 1, 0, 2, 1, 2, 1, 3, 2, 3, 3, 4, 4, 5, 5, 6, 5, 7, 6, 8, 7, 8, 8, 9),
   ncol = 2,
   byrow = TRUE
 )
 friendship_pairs
 ```
 
-I chose `byrow = TRUE` because if we ever want to add new friendships, it probably makes sense to append them as new rows. I also just like this structure better because we can easily see who is friends with whom.
+I'll praise Python for one thing so far: data structure literals. I don't need to print `friendship_pairs` in the Python code because that would just print out the actual code itself. Reminds me of Lisp. That's good.
 
-The author expertly points out that a list of pairs is not the best way to work with the data. Neither is a matrix really. Let's transform the data.
+But let me dote on my first love R too. Common data structures like matrices are build right in. No `import numpy as np` required.
+
+Moving on, the author expertly points out that a list of pairs is not the best way to work with the data. Neither is a matrix really. Let's transform the data.
 
 ```{python}
 # Initialize the dict with an empty list for each user id:
@@ -94,7 +88,8 @@ compute_friendships <- function(user) {
     friendship_pairs[, 1][friendship_pairs[, 2] == user]
   )
 }
-friendships <- lapply(names(users), compute_friendships)
+friendships <- lapply(users, compute_friendships)
+names(friendships) <- users
 friendships
 ```
 
