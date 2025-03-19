@@ -8,9 +8,13 @@ Is the R vs Python debate still alive in 2025?
 
 I'm not sure, but I was digging into an old tome by [Joel Grus](https://joelgrus.com) entitled *Data Science from Scratch*. It's a great book, but reading through it this time reminded me of the old data science debate. Rather than wax philosophically on this topic, I will translate the code from the book's introduction and comment from there. It's always best to work through examples.
 
-# The Data
+# Motivational Hypothetical: DataSciencester
 
-The so-called "motivating hypothetical" is DataSciencester, *the* social network for data scientists. First, we're given a list of user data. Each item in the list is a dictionary. Each dictionary has an ID and a name.
+DataSciencester is *the* social network for data scientists. Let's do some data science.
+
+## Finding Key Connectors
+
+First, we're given a list of user data. Each item in the list is a dictionary. Each dictionary has an ID and a name.
 
 ```{python}
 users = [
@@ -140,7 +144,9 @@ Again, easy in R.
 sort(lengths(friendships), decreasing = TRUE)
 ```
 
-The next task is to create a "Data Scientists You May Know" suggester. I'll skip the bad implementation and go straight to the correct one.
+## Data Scientists You May Know
+
+I'll skip the bad implementation and go straight to the correct one.
 
 ```{python}
 from collections import Counter                   # not loaded by default
@@ -179,3 +185,88 @@ stopifnot(friends_of_friends("Chi") == c(Hero = 2L, Clive = 1L))
 ```
 
 It's easy to extract a parts of many objects in R using single brackets and `%in%` to match names. From there, a combination of `lapply()` and `setdiff()` make it easy to remove the user from the list as well as the user's direct friends. Next, `unlist()` is a mostly reliable way to reduce a list down to a vector. Finally, `table()` and `sort()` get us to our final result. I'll add that I don't like the function name. I think something like `n_mutual_friends()` would be more clear.
+
+I'm going to skip the next part about users' interests. It doesn't really go anywhere.
+
+## Salaries and Experience
+
+Next we're given some anonymous data on salaries (in dollars) and tenures (in years).
+
+```{python}
+salaries_and_tenures = [(83000, 8.7), (88000, 8.1),
+                        (48000, 0.7), (76000, 6),
+                        (69000, 6.5), (76000, 7.5),
+                        (60000, 2.5), (83000, 10),
+                        (48000, 1.9), (63000, 4.2)]
+```
+
+Again, data structures are everything here. This is a clear case for a data frame for me.
+
+```{r}
+salaries_and_tenures <- data.frame(
+  salary = c(83000, 88000, 48000, 76000, 69000, 76000, 60000, 83000, 48000, 63000),
+  tenure = c(8.7, 8.1, 0.7, 6, 6.5, 7.5, 2.5, 10, 1.9, 4.2)
+)
+salaries_and_tenures
+```
+
+Column names are so nice to have here. Sure, a two-column matrix would work too, but I prefer matrices to contain homogeneous data within. Salary and tenure are measured in different units, which makes a data frame preferred for me.
+
+Next, the author includes a plot, but with no code. I get it. He doesn't want introduce Matplotlib yet, but in R we get plots built right in.
+
+```{r}
+plot(
+  salary ~ tenure, 
+  data = salaries_and_tenures,
+  main = "Salaries by Years Experience",
+  xlab = "Years Experience",
+  ylab = "Salary"
+)
+```
+
+Skipping the erroneous average salary by tenure piece, we move on to bucketing tenure.
+
+```{python}
+def tenure_bucket(tenure):
+    if tenure < 2:
+        return "less than two"
+    elif tenure < 5:
+        return "between two and five"
+    else:
+        return "more than five"
+
+# Keys are tenure buckets, values are lists of salaries for that bucket.
+salary_by_tenure_bucket = defaultdict(list)
+
+for salary, tenure in salaries_and_tenures:
+    bucket = tenure_bucket(tenure)
+    salary_by_tenure_bucket[bucket].append(salary)
+
+# Keys are tenure buckets, values are average salary for that bucket
+average_salary_by_bucket = {
+  tenure_bucket: sum(salaries) / len(salaries)
+  for tenure_bucket, salaries in salary_by_tenure_bucket.items()
+}
+
+assert average_salary_by_bucket == {
+    'between two and five': 61500.0,
+    'less than two': 48000.0,
+    'more than five': 79166.66666666667
+}
+```
+
+This is another win for R, which contains a built-in function called `cut()` for this. Even better, R contains a default data type for this called a `factor`, which is similar to an `enum` in other programming languages, except factors are integer vectors under the hood.
+
+```{r}
+salaries_and_tenures$tenure_bucket <- cut(
+  x = salaries_and_tenures$tenure,
+  breaks = c(0, 2, 5, Inf),
+  labels = c("less than two", "between two and five", "more than five"),
+  right = FALSE,
+  ordered_result = TRUE
+)
+
+aggregate(salary ~ tenure_bucket, data = salaries_and_tenures, mean)
+```
+
+Also, `aggregate()` is super powerful, if complicated.
