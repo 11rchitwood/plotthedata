@@ -76,8 +76,8 @@ The author chose a dictionary here for its fast look-ups. I agree. In R, the equ
 ```{r}
 compute_friendships <- function(user) {
   c(
-    friendship_pairs[, 2][friendship_pairs[, 1] == user],
-    friendship_pairs[, 1][friendship_pairs[, 2] == user]
+    friendship_pairs[, 1][friendship_pairs[, 2] == user],
+    friendship_pairs[, 2][friendship_pairs[, 1] == user]
   )
 }
 friendships <- lapply(users, compute_friendships)
@@ -139,3 +139,43 @@ Again, easy in R.
 ```{r}
 sort(lengths(friendships), decreasing = TRUE)
 ```
+
+The next task is to create a "Data Scientists You May Know" suggester. I'll skip the bad implementation and go straight to the correct one.
+
+```{python}
+from collections import Counter                   # not loaded by default
+
+def friends_of_friends(user):
+    user_id = user["id"]
+    return Counter(
+        foaf_id
+        for friend_id in friendships[user_id]     # For each of my friends,
+        for foaf_id in friendships[friend_id]     # find their friends
+        if foaf_id != user_id                     # who aren't me
+        and foaf_id not in friendships[user_id]   # and aren't my friends.
+    )
+
+
+print(friends_of_friends(users[3]))               # Counter({0: 2, 5: 1})
+
+
+assert friends_of_friends(users[3]) == Counter({0: 2, 5: 1})
+```
+
+This one is bit more tricky in R, but it helps to break it down case by case.
+
+```{r}
+friends_of_friends <- function(user) {
+  users_friends <- friendships[[user]]
+  friendships[names(friendships) %in% users_friends] |> 
+    lapply(\(friends_list) setdiff(friends_list, user)) |> 
+    lapply(\(friends_list) setdiff(friends_list, users_friends)) |> 
+    unlist() |> 
+    table() |> 
+    sort(decreasing = TRUE)
+}
+
+stopifnot(friends_of_friends("Chi") == c(Hero = 2L, Clive = 1L))
+```
+
+It's easy to extract a parts of many objects in R using single brackets and `%in%` to match names. From there, a combination of `lapply()` and `setdiff()` make it easy to remove the user from the list as well as the user's direct friends. Next, `unlist()` is a mostly reliable way to reduce a list down to a vector. Finally, `table()` and `sort()` get us to our final result. I'll add that I don't like the function name. I think something like `n_mutual_friends()` would be more clear.
