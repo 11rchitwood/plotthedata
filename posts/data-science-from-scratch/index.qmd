@@ -1,12 +1,11 @@
 ---
 title: "Data Science from Scratch"
 date: "2025-03-17"
-draft: true
 ---
 
 Is the R vs Python debate still alive in 2025?
 
-I'm not sure, but I was digging into an old tome by [Joel Grus](https://joelgrus.com) entitled *Data Science from Scratch*. It's a great book, but reading through it this time reminded me of the old data science debate. Rather than wax philosophically on this topic, I will translate the code from the book's introduction and comment from there. It's always best to work through examples.
+I'm not sure, but I was digging into an old tome by [Joel Grus](https://joelgrus.com) entitled *Data Science from Scratch*. It's a great book, but reading through it this time reminded me of the old data science debate. Rather than wax philosophically on this topic, I'm going to translate the code from the book's introduction and compare the two languages from there. It's always best to work through examples.
 
 # Motivational Hypothetical: DataSciencester
 
@@ -31,11 +30,10 @@ users = [
 ]
 ```
 
-Already, I've got some issues here. I don't think this data structure makes sense. Why are we dealing with integer IDs at all? It can't be for performance. We only have `python len(users)` users! Lets just use the string names directly.
+Already, I've got some issues here. I don't think this data structure makes sense. Why are we dealing with integer IDs at all? It can't be for performance. We only have 10 users! Lets just use the string names directly.
 
 ```{r}
 users <- c("Hero", "Dunn", "Sue", "Chi", "Thor", "Clive", "Hicks", "Devin", "Kate", "Klein")
-users
 ```
 
 Using a character vector makes the most sense to me here. We don't want integers because mathematical operations don't make sense here.
@@ -49,8 +47,9 @@ friendship_pairs = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 4), (4, 5), (5, 
 We've got a list of ID pairs. By the way, this data structure is called an [edge list](https://en.wikipedia.org/wiki/Edge_list). In R, it makes more sense to represent this as a two column matrix.
 
 ```{r}
+edges <- c("Hero", "Dunn", "Hero", "Sue", "Dunn", "Sue", "Dunn", "Chi", "Sue", "Chi", "Chi", "Thor", "Thor", "Clive", "Clive", "Hicks", "Clive", "Devin", "Hicks", "Kate", "Devin", "Kate", "Kate", "Klein")
 friendship_pairs <- matrix(
-  data = c("Hero", "Dunn", "Hero", "Sue", "Dunn", "Sue", "Dunn", "Chi", "Sue", "Chi", "Chi", "Thor", "Thor", "Clive", "Clive", "Hicks", "Clive", "Devin", "Hicks", "Kate", "Devin", "Kate", "Kate", "Klein"),
+  data = edges,
   ncol = 2,
   byrow = TRUE
 )
@@ -112,7 +111,7 @@ assert num_users == 10
 assert avg_connections == 2.4
 ```
 
-Too easy in R.
+This is a one-liner in R.
 
 ```{r}
 mean(lengths(friendships))
@@ -138,7 +137,7 @@ assert num_friends_by_id[0][1] == 3     # several people have 3 friends
 assert num_friends_by_id[-1] == (9, 1)  # user 9 has only 1 friend
 ```
 
-Again, easy in R.
+Yet another one-liner in R.
 
 ```{r}
 sort(lengths(friendships), decreasing = TRUE)
@@ -146,7 +145,7 @@ sort(lengths(friendships), decreasing = TRUE)
 
 ## Data Scientists You May Know
 
-I'll skip the bad implementation and go straight to the correct one.
+The next section is basically meanders a bit, so I'll skip the bad friend-of-a-friend implementation and go straight to the correct one.
 
 ```{python}
 from collections import Counter                   # not loaded by default
@@ -160,10 +159,6 @@ def friends_of_friends(user):
         if foaf_id != user_id                     # who aren't me
         and foaf_id not in friendships[user_id]   # and aren't my friends.
     )
-
-
-print(friends_of_friends(users[3]))               # Counter({0: 2, 5: 1})
-
 
 assert friends_of_friends(users[3]) == Counter({0: 2, 5: 1})
 ```
@@ -181,10 +176,10 @@ friends_of_friends <- function(user) {
     sort(decreasing = TRUE)
 }
 
-stopifnot(friends_of_friends("Chi") == c(Hero = 2L, Clive = 1L))
+friends_of_friends("Chi")
 ```
 
-It's easy to extract a parts of many objects in R using single brackets and `%in%` to match names. From there, a combination of `lapply()` and `setdiff()` make it easy to remove the user from the list as well as the user's direct friends. Next, `unlist()` is a mostly reliable way to reduce a list down to a vector. Finally, `table()` and `sort()` get us to our final result. I'll add that I don't like the function name. I think something like `n_mutual_friends()` would be more clear.
+It's easy to extract a parts of many objects in R using single brackets and `%in%` to match names. From there, a combination of `lapply()` and `setdiff()` make it easy to remove the user from the list as well as the user's direct friends. Next, `unlist()` is a mostly reliable way to reduce a list down to a vector. Finally, `table()` and `sort()` get us to our final result. By the way, I don't like the function name `friends_of_friends()`. I think something like `n_mutual_friends()` would be more clear.
 
 I'm going to skip the next part about users' interests. It doesn't really go anywhere.
 
@@ -227,6 +222,8 @@ plot(
 Skipping the erroneous average salary by tenure piece, we move on to bucketing tenure.
 
 ```{python}
+from collections import defaultdict
+
 def tenure_bucket(tenure):
     if tenure < 2:
         return "less than two"
@@ -269,4 +266,35 @@ salaries_and_tenures$tenure_bucket <- cut(
 aggregate(salary ~ tenure_bucket, data = salaries_and_tenures, mean)
 ```
 
-Also, `aggregate()` is super powerful, if complicated.
+Also, `aggregate()` is super powerful, if complicated. I'm going to skip the rest of the examples, since they aren't that interesting.
+
+## Diversion: igraph
+
+Going back to the first section on the DataSciencester social network, it strikes me that there is a better tool this analysis: [igraph](https://igraph.org). It's a collection of network analysis tools implemented in C with bindings Mathematica, Python, and R. Since the R bindings for igraph were developed first (and I'm biased towards R), we'll use that version.
+
+```{r}
+library(igraph)
+
+g <- make_graph(edges = edges, directed = FALSE)
+plot(g)
+```
+
+We can size each vertex according to degree.
+
+```{r}
+V(g)$size <- degree(g) * 10
+plot(g, vertex.size = V(g)$size)
+```
+
+But actually betweenness tells more of the story for this graph.
+
+```{r}
+#| classes: preview-image
+V(g)$size <- betweenness(g)
+plot(g, vertex.size = V(g)$size)
+```
+
+## Conclusion
+
+The Zen of Python will tell you that Python is "batteries included." I'm here to tell you that R is "batteries included" for data science. R has built-in data frames and matrices. It has plotting built right in too, and you know I love that given this site's name. It's vectorized from the start and comes with lots of handy functional programming tools like `apply()` and the gang. And we didn't even fit a statistical model. Those are built right in too. So do I need to write *Data Science from Scratch in R* or what?
+
